@@ -7,7 +7,7 @@ class Tweet:
         self.user_img_link=""
         self.user_title=""
         self.user=""
-        self.user_verified=None
+        self.user_verified=False
         self.status_link=""
         self.time=""
         self.content=""
@@ -29,6 +29,5 @@ class Tweet:
 
         self.user_title=format(self.user_title)
         self.user=format(self.user)
-        self.user_verified=None
         self.content=format(self.content)
         self.attachment["textData"]=format(self.attachment["textData"])

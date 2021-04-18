@@ -19,6 +19,7 @@ browser.maximize_window()
 browser.get("https://twitter.com/search?q=request%20for%20startup&src=typed_query&f=live")
 
 tweets=[]
+# this is iteration count you may want to change
 iter_for_scroll=20
 
 def tweets_from_raw(tweets_raw,tweets):
@@ -27,22 +28,20 @@ def tweets_from_raw(tweets_raw,tweets):
 
         # getting top
         img_anchor = tweet_raw.find_element_by_css_selector("div:nth-child(1) a[href]")
-        tweet.userLink = img_anchor.get_attribute("href")
+        tweet.user_link = img_anchor.get_attribute("href")
         tweet.user_img_link = img_anchor.find_element_by_css_selector("img[src]").get_attribute("src")
 
         title_autos = tweet_raw.find_elements_by_css_selector("div:nth-child(2) > div:nth-child(1) a div[dir='auto']")
         
-        tweet.userTitle = title_autos[0].text
+        tweet.user_title = title_autos[0].text
         if len(title_autos[1].find_elements_by_css_selector("svg")) > 0:
             tweet.user_verified=True
-        else:
-            tweet.user_verified=False
         
         tweet.user = tweet_raw.find_element_by_css_selector("div:nth-child(2) > div:nth-child(1) a div[dir='ltr']").text
 
         time_anchor=tweet_raw.find_element_by_xpath("./div[2]/div[1]/div/div[1]/div[1]/a")
 
-        tweet.statusLink = time_anchor.get_attribute("href")
+        tweet.status_link = time_anchor.get_attribute("href")
 
         tweet.time = time_anchor.find_element_by_css_selector("time").get_attribute("datetime")
         #2021-04-18T15:16:36.000Z
@@ -52,7 +51,7 @@ def tweets_from_raw(tweets_raw,tweets):
         content_raw = tweet_raw.find_element_by_xpath("./div[2]/div[2]/div[1]/div[1]")
 
         tweet.content= content_raw.text
-        tweet.contentLang= content_raw.get_attribute("lang")
+        tweet.content_lang= content_raw.get_attribute("lang")
 
         # getting attachment
         attachment_raw = tweet_raw.find_element_by_xpath("./div[2]/div[2]/div[2]")
@@ -63,14 +62,14 @@ def tweets_from_raw(tweets_raw,tweets):
             "textData":attachment_raw.text,
         }
 
-        for linkRaw in attachment_raw.find_elements_by_css_selector("a[href]"):
-            tweet.attachment["links"].append(linkRaw.get_attribute("href"))
+        for link_raw in attachment_raw.find_elements_by_css_selector("a[href]"):
+            tweet.attachment["links"].append(link_raw.get_attribute("href"))
         
-        for imageRaw in attachment_raw.find_elements_by_css_selector("img[src]"):
-            tweet.attachment["imageUrls"].append(imageRaw.get_attribute("src"))
+        for image_raw in attachment_raw.find_elements_by_css_selector("img[src]"):
+            tweet.attachment["imageUrls"].append(image_raw.get_attribute("src"))
         
         # getting bottom
-        bottomElems =  tweet_raw.find_elements_by_css_selector("div[data-testid='reply'],div[data-testid='retweet'],div[data-testid='like']>div>div:nth-child(2)")
+        bottom_elems =  tweet_raw.find_elements_by_css_selector("div[data-testid='reply'],div[data-testid='retweet'],div[data-testid='like']>div>div:nth-child(2)")
 
         def format_counts(x):
             replaced = int(x.replace("K","").replace("M","").replace("B",""))
@@ -83,13 +82,13 @@ def tweets_from_raw(tweets_raw,tweets):
             
             return replaced
             
-        tweet.reply_count = bottomElems[0].text
+        tweet.reply_count = bottom_elems[0].text
         tweet.reply_count = format_counts(tweet.reply_count) if tweet.reply_count!="" else 0
 
-        tweet.retweet_count = bottomElems[1].text
+        tweet.retweet_count = bottom_elems[1].text
         tweet.retweet_count = format_counts(tweet.retweet_count) if tweet.retweet_count!="" else 0
 
-        tweet.like_count = bottomElems[2].text
+        tweet.like_count = bottom_elems[2].text
         tweet.like_count = format_counts(tweet.like_count) if tweet.like_count!="" else 0
 
         tweet.format_values()
